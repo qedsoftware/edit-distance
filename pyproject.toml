@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=77.0.3", "Cython>=3.0.8"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.4.2",
+    "isort>=5.13.2",
+    "flake8>=7.1.1",
+]
+
+[project]
+name = "editdistance"
+version = "0.1.6"
+requires-python = ">=3.9"
+authors = [
+    {name = "QED"},
+]
+description = "Fast Damerau optimal string alignment algorithm."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["edit distance", "levenshtein", "damerau"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Programming Language :: C++",
+    "Programming Language :: Cython",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[project.urls]
+Repository = "https://github.com/qedsoftware/edit-distance"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.basedpyright]
+reportUnusedCallResult = "none"
+
+[tool.cibuildwheel]
+skip = "cp36-* cp37-* pp* *_i686 *_c64le *_s390x"
+environment = {LDFLAGS="-Wl,--strip-all"}
+build-verbosity = "3"
+
+test-command = "python -m unittest discover -v"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-macosx*"
+environment = {CFLAGS="-g0"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["editdistance"]
