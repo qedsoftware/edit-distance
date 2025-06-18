@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Upgrade pip
+      run: python -m pip install --upgrade pip
+
+    - name: Install development dependencies
+      run: pip install .[dev]
+
+    - name: Ensure linters.sh is executable
+      run: chmod +x ./linters.sh
+
+    - name: Run linters script
+      run: ./linters.sh
+    
+    - name: Run tests
+      run: python -m unittest discover -s tests -p "*.py"
