@@ -7,22 +7,22 @@
 #include <iostream>
 
 
-enum EditopName {
+enum CppEditopName {
     INSERT,
     DELETE,
     REPLACE,
-    TRANSPOSE
+    SWAP
 };
 
-struct Editop {
-    EditopName name;
+struct CppEditop {
+    CppEditopName name;
     int src_idx;
     int dst_idx;
     double cost;
     std::string output_string;
     
-    Editop() : name(INSERT), src_idx(0), dst_idx(0), cost(0.0), output_string("") {}
-    Editop(EditopName n, int si, int di, double c, const std::string& os)
+    CppEditop() : name(INSERT), src_idx(0), dst_idx(0), cost(0.0), output_string("") {}
+    CppEditop(CppEditopName n, int si, int di, double c, const std::string& os)
         : name(n), src_idx(si), dst_idx(di), cost(c), output_string(os) {}
 };
 
@@ -30,43 +30,43 @@ struct Editop {
 std::vector<std::vector<double>> compute_dp_table(
     const std::string& a, 
     const std::string& b, 
-    const std::map<EditopName, double>& cost_map
+    const std::map<CppEditopName, double>& cost_map
 );
 
 
 double cpp_compute_distance(
     const std::string& a, 
     const std::string& b, 
-    const std::map<EditopName, double>& cost_map
+    const std::map<CppEditopName, double>& cost_map
 );
 
 
-std::vector<std::vector<Editop>> backtrack_all_paths(
+std::vector<std::vector<CppEditop>> backtrack_all_paths(
     const std::string& a, 
     const std::string& b, 
-    const std::map<EditopName, double>& cost_map,
+    const std::map<CppEditopName, double>& cost_map,
     const std::vector<std::vector<double>>& dp, 
     int i, 
     int j, 
-    std::vector<Editop>& current_path
+    std::vector<CppEditop>& current_path
 );
 
 
-std::vector<std::vector<Editop>> cpp_compute_all_paths(
+std::vector<std::vector<CppEditop>> cpp_compute_all_paths(
     const std::string& a, 
     const std::string& b, 
-    const std::map<EditopName, double>& cost_map
+    const std::map<CppEditopName, double>& cost_map
 );
 
 
 void cpp_print_all_paths(
     const std::string& a, 
     const std::string& b, 
-    const std::map<EditopName, double>& cost_map
+    const std::map<CppEditopName, double>& cost_map
 );
 
 
-std::string editop_name_to_string(EditopName name);
-std::ostream& operator<<(std::ostream& os, const Editop& op);
+std::string editop_name_to_string(CppEditopName name);
+std::ostream& operator<<(std::ostream& os, const CppEditop& op);
 
 #endif // EDIT_DISTANCE_OSA_HPP

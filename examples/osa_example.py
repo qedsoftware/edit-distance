@@ -6,38 +6,31 @@ First compile with: python setup.py build_ext --inplace
 
 try:
     from editdistance.osa import (
-        PyEditopName,
         compute_distance,
-        compute_with_all_paths,
-        print_all_paths,
+        get_all_paths,
     )
 
     def main():
-        # Define cost map
-        cost_map = {
-            PyEditopName.DELETE: 1.0,
-            PyEditopName.INSERT: 1.0,
-            PyEditopName.REPLACE: 1.0,
-            PyEditopName.TRANSPOSE: 1.0,
-        }
-
         # Test case from original Python code
         print("Testing OSA distance with all paths:")
-        print_all_paths("aaaaaaaaaa", "abaabababa", cost_map)
 
-        # Additional test case
-        print("\nAdditional test case:")
-        paths = compute_with_all_paths("CA", "AX", cost_map)
-        distance = compute_distance("CA", "AX", cost_map)
+        test_cases = (
+            ("aaaaaaaaaa", "abaabababa"),
+            ("CA", "AX"),
+        )
 
-        print(f"OSA Distance from 'CA' to 'AX': {distance}")
-        print(f"Number of optimal edit sequences: {len(paths)}")
-        print()
+        for source, target in test_cases:
+            print(f"\nComputing OSA distance from '{source}' to '{target}':")
+            distance = compute_distance(source, target)
+            print(f"Distance: {distance}")
 
-        for i, path in enumerate(paths, 1):
-            print(f"Path {i}:")
-            for op in path:
-                print(f"  {op}")
+            paths = get_all_paths(source, target)
+            print(f"Number of optimal edit sequences: {len(paths)}")
+
+            for i, path in enumerate(paths, 1):
+                print(f"Path {i}:")
+                for op in path:
+                    print(f"  {op}")
             print()
 
     if __name__ == "__main__":
