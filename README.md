@@ -37,7 +37,7 @@ import editdistance.osa
 # Example usage:
 str1 = "kitten"
 str2 = "sitting"
-distance = editdistance.osa.calculate_distance(str1, str2)
+distance = editdistance.osa.calculate_distance(str1, str2, swap_weight=0.1)
 print(f"The edit distance between '{{}}' and '{{}}' is {{}}".format(str1, str2, distance))
 ```
 

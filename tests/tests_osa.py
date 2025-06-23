@@ -1,9 +1,8 @@
 import unittest
 
 from editdistance.osa import (
-    PyEditopName,
     compute_distance,
-    compute_with_all_paths,
+    get_all_paths,
 )
 
 COMPUTE_DISTANCE_TEST_CASES = [
@@ -25,14 +24,6 @@ COMPUTE_ALL_PATHS_TEST_CASES = [
 
 
 class TestOsaDistance(unittest.TestCase):
-    def setUp(self):
-        self.cost_map = {
-            PyEditopName.DELETE: 1.0,
-            PyEditopName.INSERT: 1.0,
-            PyEditopName.REPLACE: 1.0,
-            PyEditopName.TRANSPOSE: 1.0,
-        }
-
     def test_compute_distance(self):
         for (
             description,
@@ -43,10 +34,10 @@ class TestOsaDistance(unittest.TestCase):
             with self.subTest(
                 description,
             ):
-                distance = compute_distance(source, target, self.cost_map)
+                distance = compute_distance(source, target)
                 self.assertEqual(distance, expected_distance)
 
-    def test_compute_with_all_paths(self):
+    def test_get_all_paths(self):
         for (
             description,
             source,
@@ -56,5 +47,5 @@ class TestOsaDistance(unittest.TestCase):
             with self.subTest(
                 description,
             ):
-                paths = compute_with_all_paths(source, target, self.cost_map)
+                paths = get_all_paths(source, target)
                 self.assertEqual(len(paths), expected_num_paths)
