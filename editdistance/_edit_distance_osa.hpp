@@ -29,40 +29,55 @@ struct CppEditop {
 
 std::vector<std::vector<double>> compute_dp_table(
     const std::string& a, 
-    const std::string& b, 
-    const std::map<CppEditopName, double>& cost_map
+    const std::string& b,
+    double replace_weight,
+    double insert_weight,
+    double delete_weight,
+    double swap_weight
 );
 
 
 double cpp_compute_distance(
     const std::string& a, 
-    const std::string& b, 
-    const std::map<CppEditopName, double>& cost_map
+    const std::string& b,
+    double replace_weight,
+    double insert_weight,
+    double delete_weight,
+    double swap_weight
 );
 
 
 std::vector<std::vector<CppEditop>> backtrack_all_paths(
     const std::string& a, 
     const std::string& b, 
-    const std::map<CppEditopName, double>& cost_map,
     const std::vector<std::vector<double>>& dp, 
     int i, 
     int j, 
-    std::vector<CppEditop>& current_path
+    std::vector<CppEditop>& current_path,
+    double replace_weight,
+    double insert_weight,
+    double delete_weight,
+    double swap_weight
 );
 
 
 std::vector<std::vector<CppEditop>> cpp_compute_all_paths(
     const std::string& a, 
-    const std::string& b, 
-    const std::map<CppEditopName, double>& cost_map
+    const std::string& b,
+    double replace_weight,
+    double insert_weight,
+    double delete_weight,
+    double swap_weight
 );
 
 
 void cpp_print_all_paths(
     const std::string& a, 
-    const std::string& b, 
-    const std::map<CppEditopName, double>& cost_map
+    const std::string& b,
+    double replace_weight,
+    double insert_weight,
+    double delete_weight,
+    double swap_weight
 );
 
 
