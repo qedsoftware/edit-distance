@@ -1,6 +1,9 @@
 import unittest
+from editdistance.osa import get_all_paths, EditopName
+from rapidfuzz._common_py import common_prefix
 
 from editdistance.osa import (
+    apply_editops,
     compute_distance,
     get_all_paths,
 )
@@ -22,6 +25,27 @@ COMPUTE_ALL_PATHS_TEST_CASES = [
     ("entirely different", "cab", "axb", 2),
 ]
 
+EDITOPS_TRANSFORM_TEST_CASES = [
+    ("abc", "acb"),
+    ("kitten", "sitting"),
+    ("flaw", "lawn"),
+    ("", "abc"),
+    ("abc", ""),
+    ("abcdef", "azced"),
+    ("a", "a"),
+    ("a", ""),
+    ("", ""),
+    ("banana", "ban"),
+    ("intention", "execution"),
+    ("gumbo", "gambol"),
+    ("sunday", "saturday"),
+    ("ca", "abc"),
+    ("abcdef", "fedcba"),
+    ("racecar", "racecar"),
+    ("spelling", "spilling"),
+    ("distance", "instance"),
+    ("book", "back"),
+]
 
 class TestOsaDistance(unittest.TestCase):
     def test_compute_distance(self):
@@ -49,3 +73,12 @@ class TestOsaDistance(unittest.TestCase):
             ):
                 paths = get_all_paths(source, target)
                 self.assertEqual(len(paths), expected_num_paths)
+
+    def test_editops_transform(self):
+        for src, dst in EDITOPS_TRANSFORM_TEST_CASES:
+            with self.subTest(src=src, dst=dst):
+                paths = get_all_paths(src, dst)
+                self.assertTrue(paths, f"No paths found for {src} -> {dst}")
+                for path in paths:
+                    result = apply_editops(src, dst, path)
+                    self.assertEqual(result, dst, f"Failed for {src} -> {dst} with path {path}")
