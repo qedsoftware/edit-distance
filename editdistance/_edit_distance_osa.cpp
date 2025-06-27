@@ -77,7 +77,7 @@ std::vector<std::vector<CppEditop>> backtrack_all_paths(
     const double tol = 1e-6;
 
     if (i > 0 && std::abs((dp[i-1][j] + delete_weight) - current_cost) < tol) {
-        CppEditop op(DELETE, i-1, i-1, delete_weight, std::string(1, a[i-1]));
+        CppEditop op(DELETE, i-1, j, delete_weight, std::string(1, a[i-1]));
         current_path.push_back(op);
         auto paths = backtrack_all_paths(a, b, dp, i-1, j, current_path, replace_weight, insert_weight, delete_weight, swap_weight);
         all_paths.insert(all_paths.end(), paths.begin(), paths.end());
@@ -85,7 +85,7 @@ std::vector<std::vector<CppEditop>> backtrack_all_paths(
     }
     
     if (j > 0 && std::abs((dp[i][j-1] + insert_weight) - current_cost) < tol) {
-        CppEditop op(INSERT, i, i, insert_weight, std::string(1, b[j-1]));
+        CppEditop op(INSERT, i, j-1, insert_weight, std::string(1, b[j-1]));
         current_path.push_back(op);
         auto paths = backtrack_all_paths(a, b, dp, i, j-1, current_path, replace_weight, insert_weight, delete_weight, swap_weight);
         all_paths.insert(all_paths.end(), paths.begin(), paths.end());
