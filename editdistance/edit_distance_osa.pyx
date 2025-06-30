@@ -1,6 +1,7 @@
 # distutils: language = c++
 # distutils: sources = ./editdistance/_edit_distance_osa.cpp
 
+from libcpp cimport bool
 from libcpp.map cimport map
 from libcpp.string cimport string
 from libcpp.vector cimport vector
@@ -14,6 +15,7 @@ cdef extern from "_edit_distance_osa.hpp":
         DELETE
         REPLACE
         SWAP
+        MATCH
     
     cdef struct CppEditop:
         CppEditopName name
@@ -38,6 +40,7 @@ class EditopName(Enum):
     DELETE = 1
     REPLACE = 2
     SWAP = 3
+    MATCH = 4
 
 
 cdef class Editop:
@@ -64,7 +67,8 @@ def get_all_paths(
     double replace_weight=1.0,
     double insert_weight=1.0,
     double delete_weight=1.0,
-    double swap_weight=1.0
+    double swap_weight=1.0,
+    bool return_matches=False,
 ):
     cdef string cpp_a = a.encode("utf-8")
     cdef string cpp_b = b.encode("utf-8")
@@ -76,8 +80,6 @@ def get_all_paths(
     for cpp_path in cpp_paths:
         python_path = []
         for cpp_op in cpp_path:
-            if cpp_op.cost == 0:
-                continue
             if cpp_op.name == INSERT:
                 py_name = EditopName.INSERT
             elif cpp_op.name == DELETE:
@@ -86,6 +88,11 @@ def get_all_paths(
                 py_name = EditopName.REPLACE
             elif cpp_op.name == SWAP:
                 py_name = EditopName.SWAP
+            elif cpp_op.name == MATCH:
+                if return_matches:
+                    py_name = EditopName.MATCH
+                else:
+                    continue
             else:
                 py_name = None
             python_path.append(Editop(
@@ -99,12 +106,11 @@ def get_all_paths(
     return python_paths
 
 def apply_editops(src, dst, editops):
+    # assumes editops are sorted from left to right
+    # assumes match operations are included
     src_idx = 0
     s = ""
     for op in editops:
-        while src_idx < op.src_idx:
-            s += src[src_idx]
-            src_idx += 1
         if op.name == EditopName.INSERT:
             s += dst[op.dst_idx]
         elif op.name == EditopName.DELETE:
@@ -116,9 +122,9 @@ def apply_editops(src, dst, editops):
             s += src[op.src_idx + 1]        
             s += src[op.src_idx]
             src_idx += 2
-    while src_idx < len(src):
-        s += src[src_idx]
-        src_idx += 1
+        elif op.name == EditopName.MATCH:
+            s += src[op.src_idx]
+            src_idx += 1
     return s
 
 
