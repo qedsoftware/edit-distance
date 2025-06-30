@@ -98,6 +98,29 @@ def get_all_paths(
         python_paths.append(python_path)
     return python_paths
 
+def apply_editops(src, dst, editops):
+    src_idx = 0
+    s = ""
+    for op in editops:
+        while src_idx < op.src_idx:
+            s += src[src_idx]
+            src_idx += 1
+        if op.name == EditopName.INSERT:
+            s += dst[op.dst_idx]
+        elif op.name == EditopName.DELETE:
+            src_idx += 1
+        elif op.name == EditopName.REPLACE:
+            s += dst[op.dst_idx]
+            src_idx += 1
+        elif op.name == EditopName.SWAP:
+            s += src[op.src_idx + 1]        
+            s += src[op.src_idx]
+            src_idx += 2
+    while src_idx < len(src):
+        s += src[src_idx]
+        src_idx += 1
+    return s
+
 
 def print_all_paths(
     str a,
