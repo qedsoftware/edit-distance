@@ -11,7 +11,8 @@ enum CppEditopName {
     INSERT,
     DELETE,
     REPLACE,
-    SWAP
+    SWAP,
+    MATCH
 };
 
 struct CppEditop {

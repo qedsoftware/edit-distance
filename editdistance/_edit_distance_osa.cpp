@@ -91,19 +91,30 @@ std::vector<std::vector<CppEditop>> backtrack_all_paths(
         all_paths.insert(all_paths.end(), paths.begin(), paths.end());
         current_path.pop_back();
     }
-    
-    if (i > 0 && j > 0) {
-        double sub_cost = (a[i-1] == b[j-1]) ? 0.0 : replace_weight;
-        if (std::abs((dp[i-1][j-1] + sub_cost) - current_cost) < tol) {
-            std::string out_char = (sub_cost == 0.0) ? std::string(1, a[i-1]) : std::string(1, b[j-1]);
-            CppEditop op(REPLACE, i-1, j-1, sub_cost, out_char);
+
+    if (i > 0 && j > 0 && a[i-1] != b[j-1]) {
+        if (std::abs((dp[i-1][j-1] + replace_weight) - current_cost) < tol) {
+            std::string out_char = std::string(1, b[j-1]);
+            CppEditop op(REPLACE, i-1, j-1, replace_weight, out_char);
             current_path.push_back(op);
             auto paths = backtrack_all_paths(a, b, dp, i-1, j-1, current_path, replace_weight, insert_weight, delete_weight, swap_weight);
             all_paths.insert(all_paths.end(), paths.begin(), paths.end());
             current_path.pop_back();
         }
     }
-    
+
+    if (i > 0 && j > 0 && a[i-1] == b[j-1]) {
+        double match_weight = 0.0; // We might want to make this non-zero in the future
+        if (std::abs((dp[i-1][j-1] + match_weight) - current_cost) < tol) {
+            std::string out_char = std::string(1, a[i-1]);
+            CppEditop op(MATCH, i-1, j-1, match_weight, out_char);
+            current_path.push_back(op);
+            auto paths = backtrack_all_paths(a, b, dp, i-1, j-1, current_path, replace_weight, insert_weight, delete_weight, swap_weight);
+            all_paths.insert(all_paths.end(), paths.begin(), paths.end());
+            current_path.pop_back();
+        }
+    }
+
     if (i > 1 && j > 1 &&
         a[i-1] == b[j-2] && a[i-2] == b[j-1] &&
         std::abs((dp[i-2][j-2] + swap_weight) - current_cost) < tol) {
@@ -161,6 +172,7 @@ std::string editop_name_to_string(CppEditopName name) {
         case DELETE: return "DELETE";
         case REPLACE: return "REPLACE";
         case SWAP: return "SWAP";
+        case MATCH: return "MATCH";
         default: return "UNKNOWN";
     }
 }
