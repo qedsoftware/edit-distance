@@ -1,6 +1,7 @@
 #include "_edit_distance_osa.hpp"
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 std::vector<std::vector<double>> compute_dp_table(
     const std::string& a, 
@@ -164,6 +165,64 @@ void cpp_print_all_paths(
         }
         std::cout << std::endl;
     }
+}
+
+double cpp_compute_log_probability(
+    const std::string& a,
+    const std::string& b,
+    double match_prob,
+    double replace_prob,
+    double insert_prob,
+    double delete_prob,
+    double swap_prob
+) {
+    const int len_a = a.length();
+    const int len_b = b.length();
+    auto at = [len_b](int i, int j) { return i * (len_b + 1) + j; };
+
+    // f[at(i, j)]: summed probability of all sequences turning a[0:i] into b[0:j].
+    std::vector<double> f((len_a + 1) * (len_b + 1), 0.0);
+    f[at(0, 0)] = 1.0;
+
+    for (int i = 0; i <= len_a; ++i) {
+        for (int j = 0; j <= len_b; ++j) {
+            if (i == 0 && j == 0) {
+                continue;
+            }
+            double total = 0.0;
+
+            // Last operation: a[i-1] becomes b[j-1] (match or replace).
+            if (i > 0 && j > 0) {
+                double prob = (a[i - 1] == b[j - 1]) ? match_prob : replace_prob;
+                total += f[at(i - 1, j - 1)] * prob;
+            }
+
+            // Last operation: a[i-1] deleted.
+            if (i > 0) {
+                total += f[at(i - 1, j)] * delete_prob;
+            }
+
+            // Last operation: b[j-1] inserted.
+            if (j > 0) {
+                total += f[at(i, j - 1)] * insert_prob;
+            }
+
+            // Last operation: a[i-2] a[i-1] swapped.
+            // Swapping two equal characters is indistinguishable from two matches, so skip it.
+            if (i > 1 && j > 1 && a[i - 2] != a[i - 1] &&
+                a[i - 2] == b[j - 1] && a[i - 1] == b[j - 2]) {
+                total += f[at(i - 2, j - 2)] * swap_prob;
+            }
+
+            f[at(i, j)] = total;
+        }
+    }
+
+    double probability = f[at(len_a, len_b)];
+    if (probability <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    return std::log(probability);
 }
 
 std::string editop_name_to_string(CppEditopName name) {
