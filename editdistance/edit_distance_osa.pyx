@@ -34,6 +34,11 @@ cdef extern from "_edit_distance_osa.hpp":
         const string& a, const string& b,
         double replace_weight, double insert_weight, double delete_weight, double swap_weight)
 
+    double cpp_compute_log_probability(
+        const string& a, const string& b,
+        double match_prob, double replace_prob, double insert_prob, double delete_prob,
+        double swap_prob)
+
 
 class EditopName(Enum):
     INSERT = 0
@@ -140,6 +145,29 @@ def print_all_paths(
     cdef string cpp_b = b.encode("utf-8")
     cpp_print_all_paths(
         cpp_a, cpp_b, replace_weight, insert_weight, delete_weight, swap_weight)
+
+
+def compute_log_probability(
+    str a,
+    str b,
+    double match_prob,
+    double replace_prob,
+    double insert_prob,
+    double delete_prob,
+    double swap_prob,
+):
+    """
+    Log of the summed probability of all edit sequences that turn `a` into `b`.
+
+    Every character of `a` is either matched, replaced, deleted, or swapped
+    with the next one, and characters can be inserted anywhere. The probability
+    of a sequence is the product of the probabilities of its operations.
+    Returns -inf if no sequence is possible.
+    """
+    cdef string cpp_a = a.encode("utf-8")
+    cdef string cpp_b = b.encode("utf-8")
+    return cpp_compute_log_probability(
+        cpp_a, cpp_b, match_prob, replace_prob, insert_prob, delete_prob, swap_prob)
 
 
 def compute_distance(

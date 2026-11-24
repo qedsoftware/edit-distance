@@ -82,6 +82,19 @@ void cpp_print_all_paths(
 );
 
 
+// Log of the summed probability of all edit sequences that turn `a` into `b`,
+// where each operation has a fixed probability. Returns -infinity if no sequence is possible.
+double cpp_compute_log_probability(
+    const std::string& a,
+    const std::string& b,
+    double match_prob,
+    double replace_prob,
+    double insert_prob,
+    double delete_prob,
+    double swap_prob
+);
+
+
 std::string editop_name_to_string(CppEditopName name);
 std::ostream& operator<<(std::ostream& os, const CppEditop& op);
 
